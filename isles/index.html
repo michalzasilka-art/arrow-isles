@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b1226">
+<title>Arrow Isles · Fugio</title>
+<meta name="description" content="Arrow Isles: a blocky 3D archer game with Foxino and his friends. Move to dodge, stand still to shoot, win trophies and unlock three islands.">
+<link rel="icon" href="/img/app-arrowisles.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;800;900&family=Pixelify+Sans:wght@400..700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+/* Arrow Isles: a portrait phone game in a bright cartoon look: chunky rounded titles (Lilita One), glossy rounded buttons
+   with a dark outline, deep blue panels with a light rim. On a computer it plays in a phone-shaped column. */
+:root{--t:'Lilita One',system-ui,sans-serif;--b:'Nunito',system-ui,sans-serif;--ink:#1b1440;--gold:#ffd23a;--panel:linear-gradient(#3550b8,#24348a);--rim:#7f9cff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;color:#fff;font-family:var(--b);font-weight:800;overscroll-behavior:none}
+body{background:radial-gradient(circle at 50% 30%,#3a5cc8,#141a40 75%)}
+[hidden]{display:none!important}
+#stage{touch-action:none;position:relative;height:100%;margin:0 auto;overflow:hidden;background:#8fd0ff;box-shadow:0 0 60px rgba(0,0,0,.6)}
+#cv{position:absolute;left:0;top:0;display:block}
+section{position:absolute;inset:0;pointer-events:none}
+section button,.modal{pointer-events:auto}
+button{font-family:var(--t);cursor:pointer;color:#fff;border:0;letter-spacing:.02em}
+.tro{height:1.15em;vertical-align:-.2em;filter:drop-shadow(0 1px 0 rgba(0,0,0,.35))}
+/* glossy buttons */
+.big{position:relative;font-size:30px;padding:10px 46px 13px;border-radius:18px;border:3px solid var(--ink);background:linear-gradient(#ffe066 0,#ffb21e 55%,#ff8a14 100%);
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.65),inset 0 -5px 0 rgba(160,60,0,.35),0 5px 0 var(--ink),0 10px 18px rgba(0,0,0,.35);text-shadow:0 2px 0 rgba(120,50,0,.6),0 0 1px var(--ink);color:#fff}
+.big:active{transform:translateY(4px);box-shadow:inset 0 3px 0 rgba(255,255,255,.65),inset 0 -5px 0 rgba(160,60,0,.35),0 1px 0 var(--ink)}
+.big.off{background:linear-gradient(#c8cede,#8e96ac);box-shadow:inset 0 3px 0 rgba(255,255,255,.5),inset 0 -5px 0 rgba(0,0,0,.2),0 5px 0 var(--ink)}
+.blue{background:linear-gradient(#7ad0ff,#3a8cf0 60%,#2a6ad8);box-shadow:inset 0 3px 0 rgba(255,255,255,.6),inset 0 -5px 0 rgba(0,40,120,.35),0 5px 0 var(--ink),0 10px 18px rgba(0,0,0,.3)}
+.ghost{background:none;font-family:var(--b);font-weight:900;font-size:16px;opacity:.85;margin-top:16px;text-decoration:underline}
+.panel{background:var(--panel);border:3px solid var(--ink);border-radius:18px;box-shadow:inset 0 0 0 2px var(--rim),inset 0 4px 0 rgba(255,255,255,.18),0 6px 14px rgba(0,0,0,.3)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 14px 5px 8px;border-radius:999px;background:linear-gradient(#2c3c90,#1c2668);border:3px solid var(--ink);box-shadow:inset 0 0 0 2px var(--rim);font:400 20px var(--t);white-space:nowrap}
+.round{width:46px;height:46px;border-radius:50%;border:3px solid var(--ink);background:linear-gradient(#7ad0ff,#2a6ad8);box-shadow:inset 0 3px 0 rgba(255,255,255,.55),0 3px 0 var(--ink);font-size:16px}
+
+/* menu */
+#menu .top{position:absolute;top:calc(8px + env(safe-area-inset-top));left:10px;right:10px;display:flex;justify-content:space-between;align-items:flex-start}
+#logo{width:min(62vw,240px);margin:-4px 0 0 -4px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.3))}
+.logo{font:400 34px/.9 var(--t);color:var(--gold);text-shadow:0 3px 0 #8a3a00,0 0 2px #3a1a00}
+.ribbon{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(346px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px}
+.ribbon h2{margin:0;padding:6px 34px 9px;font:400 26px var(--t);color:#fff;text-shadow:0 2px 0 #7a1a2a;background:linear-gradient(#ff6a7a,#e0304a);border:3px solid var(--ink);
+  clip-path:polygon(0 0,100% 0,94% 50%,100% 100%,0 100%,6% 50%);white-space:nowrap}
+.ribbon button{width:42px;height:42px;font-size:26px;line-height:1;padding-bottom:4px}
+.ribbon button:disabled{opacity:.35}
+#isleSub{position:absolute;left:12px;right:12px;bottom:calc(320px + env(safe-area-inset-bottom));margin:0;text-align:center;font-size:14px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.road{position:absolute;left:18px;right:18px;bottom:calc(262px + env(safe-area-inset-bottom));padding:8px 12px 9px}
+.road .bar{position:relative;height:14px;border-radius:8px;background:#121a4a;border:2px solid var(--ink);overflow:hidden}
+.road .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:8px;background:linear-gradient(#fff08a,#ffc020 60%,#f09a10)}
+.road p{margin:5px 0 0;font-size:13px;text-align:center}
+#qbtn{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(206px + env(safe-area-inset-bottom));width:min(340px,calc(100% - 28px));display:flex;align-items:center;gap:10px;text-align:left;
+  padding:6px 12px 7px 8px;border-radius:16px;border:3px solid var(--ink);background:linear-gradient(#a070ff,#6a3ad8);box-shadow:inset 0 3px 0 rgba(255,255,255,.4),0 4px 0 var(--ink)}
+#qbtn .lv{flex:none;font:400 15px var(--t);color:var(--ink);background:var(--c,#7fe0a0);padding:6px 8px;border-radius:10px;border:2px solid var(--ink)}
+#qbtn .t{flex:1;min-width:0;font-family:var(--b)}
+#qbtn small{display:block;font-size:10px;font-weight:900;letter-spacing:.14em;opacity:.85}
+#qbtn b{display:block;font-size:15px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#qbtn .go{flex:none;font-size:26px}
+.heroes{position:absolute;left:0;right:0;bottom:calc(112px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:5px;padding:0 6px}
+.hero{position:relative;flex:0 1 60px;min-width:0;padding:3px 2px 4px;border-radius:14px;border:3px solid var(--ink);background:linear-gradient(#3550b8,#24348a);box-shadow:inset 0 0 0 2px #5a74d8;font:900 10px var(--b);text-align:center;transition:transform .15s}
+.hero img.face{width:100%;max-width:52px;aspect-ratio:1;display:block;margin:0 auto}
+.hero .pk{position:absolute;right:-4px;top:-6px;width:22px;height:22px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
+.hero.on{background:linear-gradient(#ffe066,#ffb21e);box-shadow:inset 0 0 0 2px #fff4b0,0 0 14px rgba(255,210,60,.8);color:#5a2a00;transform:translateY(-4px)}
+#perk{position:absolute;left:12px;right:12px;bottom:calc(88px + env(safe-area-inset-bottom));margin:0;display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+#perk img{width:22px;height:22px}
+#play{position:absolute;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);min-width:220px}
+#play:active{transform:translate(-50%,4px)}
+
+/* in a run */
+.xp{position:absolute;top:calc(10px + env(safe-area-inset-top));left:58px;right:12px;height:18px;border-radius:10px;background:#121a4a;border:3px solid var(--ink);overflow:hidden}
+.xp i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:8px;background:linear-gradient(#b8ff7a,#4fd03a 60%,#2fa82a);transition:width .2s}
+#lvl{position:absolute;top:calc(4px + env(safe-area-inset-top));left:8px;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font:400 15px/1 var(--t);text-align:center;
+  background:linear-gradient(#b8ff7a,#2fa82a);border:3px solid var(--ink);box-shadow:inset 0 3px 0 rgba(255,255,255,.5);text-shadow:0 2px 0 #145a10}
+.hud-row{position:absolute;top:calc(38px + env(safe-area-inset-top));left:62px;right:10px;display:flex;justify-content:space-between;align-items:center}
+#pauseBtn{position:absolute;right:0;top:44px}
+.room{font:400 19px var(--t);text-shadow:0 2px 0 rgba(0,0,0,.5);padding:2px 14px;border-radius:999px;background:rgba(20,26,70,.55)}
+#bossBar{position:absolute;top:calc(98px + env(safe-area-inset-top));left:30px;right:30px;text-align:center;font:400 17px var(--t);text-shadow:0 2px 0 #000}
+#bossBar i{display:block;height:16px;margin-top:3px;border-radius:9px;background:#2a0a14;border:3px solid var(--ink);overflow:hidden}
+#bossBar s{display:block;height:100%;width:100%;border-radius:7px;background:linear-gradient(#ff8a8a,#e0202a 60%,#a01020);transition:width .15s}
+#toast{position:absolute;top:46%;left:0;right:0;text-align:center;font:400 32px var(--t);color:#fff;text-shadow:0 3px 0 #b4560c,0 0 2px #5a2a00,0 6px 14px rgba(0,0,0,.35);opacity:0;transform:scale(.7);transition:opacity .25s,transform .3s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+#toast.on{opacity:1;transform:none}
+#banner{position:absolute;top:30%;left:0;right:0;text-align:center;pointer-events:none;opacity:0;transform:scale(.4) rotate(-4deg);z-index:6}
+#banner b{display:block;font:400 46px var(--t);color:#fff7c2;letter-spacing:.02em;text-shadow:0 4px 0 #c45a0a,0 7px 0 #7a3000,0 10px 22px rgba(0,0,0,.45)}
+#banner small{display:inline-block;margin-top:6px;padding:4px 14px;border-radius:99px;background:rgba(20,30,70,.75);font:400 20px var(--t);color:#ffe066}
+#banner.on{animation:bnr 1.6s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes bnr{0%{opacity:0;transform:scale(.4) rotate(-4deg)}14%{opacity:1;transform:scale(1.08) rotate(1deg)}24%{transform:scale(1) rotate(0)}82%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.15) translateY(-20px)}}
+#skills .skill{animation:cardIn .42s cubic-bezier(.2,1.5,.4,1) backwards}#skills .skill:nth-child(2){animation-delay:.09s}#skills .skill:nth-child(3){animation-delay:.18s}
+@keyframes cardIn{from{opacity:0;transform:translateY(26px) rotateX(70deg) scale(.85)}}
+#flashFx{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:5}
+#hint{position:absolute;bottom:calc(60px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:15px;text-shadow:0 2px 3px #000;transition:opacity .6s}
+#hotbar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));display:flex;gap:4px;pointer-events:none}
+#hotbar i{position:relative;width:min(36px,9vw);height:min(36px,9vw);border-radius:10px;background:rgba(20,26,70,.6);border:2px solid rgba(255,255,255,.35);display:grid;place-items:center;font-style:normal;font-size:18px}
+#hotbar i img{width:88%;height:88%}
+#hotbar b{position:absolute;right:-3px;bottom:-4px;font:400 12px var(--t);background:var(--gold);color:var(--ink);border-radius:8px;padding:0 4px;border:2px solid var(--ink)}
+#joy{position:absolute;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;background:rgba(255,255,255,.16);border:3px solid rgba(255,255,255,.45);display:none;pointer-events:none}
+#joy i{position:absolute;left:50%;top:50%;width:50px;height:50px;margin:-25px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff,#cfe0ff);box-shadow:0 3px 8px rgba(0,0,0,.35)}
+#hpTag{position:absolute;left:0;top:0;width:64px;text-align:center;pointer-events:none;display:none}
+#hpTag b{display:block;font:400 14px var(--t);text-shadow:0 2px 0 #000,0 0 2px #000}
+#hpTag i{display:block;height:9px;border-radius:5px;background:#2a0a14;border:2px solid var(--ink);overflow:hidden}
+#hpTag s{display:block;height:100%;border-radius:4px;background:linear-gradient(#a6ff8a,#2fb83a)}
+#nums{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+#nums div{position:absolute;left:0;top:0;font:400 20px var(--t);text-shadow:0 2px 0 #000,0 0 2px #000;white-space:nowrap;will-change:transform}
+#hurt{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s;background:radial-gradient(circle,transparent 45%,rgba(255,30,30,.55))}
+/* the learning round */
+#trial{position:absolute;top:calc(92px + env(safe-area-inset-top));left:10px;right:10px;background:#fffdf6;color:var(--ink);border:3px solid var(--ink);border-radius:18px;box-shadow:0 5px 0 var(--ink),0 10px 20px rgba(0,0,0,.3);padding:8px 14px 11px;text-align:center}
+#trial .tk{font:400 15px var(--t);color:#7a3cc8;letter-spacing:.02em}
+#trial .tc{font:900 20px/1.35 var(--b);margin-top:3px}
+#trial .tc.pick{font-size:17px;text-align:left}
+#trial .opt{margin:4px 0}
+#trial .opt b{display:inline-block;width:26px;height:26px;margin-right:8px;text-align:center;line-height:24px;border-radius:8px;background:#7a3cc8;color:#fff;border:2px solid var(--ink);font:400 15px var(--t)}
+#trial u{text-decoration-thickness:3px;color:#7a3cc8}
+#trial i,#quiz .card i{font-style:normal;font-size:.8em;color:#7a6a8a}
+#trial small{display:block;font-size:12px;color:#d0283a}
+.gap{display:inline-block;min-width:60px;border-bottom:3px solid var(--ink);padding:0 4px;text-align:center}
+.gap.ok{color:#1d9a3a;border-color:#1d9a3a}
+#plateTags{position:absolute;inset:0;pointer-events:none}
+#plateTags .tag{position:absolute;left:0;top:0;background:#fffdf6;color:var(--ink);border:3px solid var(--ink);border-radius:12px;padding:2px 10px 4px;font:900 19px var(--b);white-space:nowrap;box-shadow:0 4px 0 var(--ink)}
+#plateTags .tag.big{font:400 22px var(--t);padding:2px 12px 4px}
+/* English questions */
+#quiz .kick{font:400 17px var(--t);color:var(--gold);margin-bottom:10px;text-shadow:0 2px 0 #000}
+#quiz .card{width:100%;max-width:350px;background:#fffdf6;color:var(--ink);border:3px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink),0 12px 24px rgba(0,0,0,.4);padding:18px 14px;font:900 22px/1.35 var(--b)}
+#opts{display:flex;flex-direction:column;gap:10px;width:100%;max-width:350px;margin-top:18px}
+#opts button{font:400 25px var(--t);padding:9px 10px 12px;border-radius:16px;border:3px solid var(--ink);background:linear-gradient(#7ad0ff,#3a8cf0 60%,#2a6ad8);box-shadow:inset 0 3px 0 rgba(255,255,255,.55),0 5px 0 var(--ink);text-shadow:0 2px 0 rgba(0,40,120,.6)}
+#opts button:active{transform:translateY(3px)}
+#opts button.ok{background:linear-gradient(#b8ff7a,#4fd03a 60%,#2fa82a);text-shadow:0 2px 0 #145a10}
+#opts button.no{background:linear-gradient(#ff9a9a,#e0303a 60%,#b01828);text-shadow:0 2px 0 #5a0a10}
+#opts button.dim{opacity:.4}
+#quiz .why{font:400 20px var(--t);margin:14px 0 0;min-height:24px;text-shadow:0 2px 0 #000}
+#quizGo{margin-top:12px}
+/* pop-ups */
+.modal{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(40,50,130,.82),rgba(10,10,40,.9));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+.modal h2{font:400 40px/1.05 var(--t);margin:0;color:var(--gold);text-shadow:0 4px 0 #8a3a00,0 0 2px #3a1a00,0 8px 18px rgba(0,0,0,.4)}
+.modal>p{font-size:17px;margin:8px 0 0;text-shadow:0 2px 3px #000}
+#levelup h2{animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+#skills{display:flex;flex-direction:column;gap:12px;width:100%;max-width:350px;margin:18px 0 0}
+.skill{display:flex;gap:12px;align-items:center;text-align:left;padding:8px 12px 8px 8px;border-radius:18px;border:3px solid var(--ink);background:var(--panel);box-shadow:inset 0 0 0 2px var(--rim),0 5px 0 var(--ink);font-family:var(--b);animation:pop .4s backwards}
+.skill:nth-child(2){animation-delay:.08s}.skill:nth-child(3){animation-delay:.16s}
+.skill:active{transform:translateY(3px)}
+.skill .ico{flex:none;width:62px;height:62px;border-radius:14px;background:radial-gradient(circle at 50% 35%,#7fa0ff,#2a3a90);border:2px solid var(--ink);display:grid;place-items:center;font-size:30px;overflow:hidden}
+.skill .ico img{width:100%;height:100%}
+.skill b{font:400 21px var(--t);display:block}
+.skill span span{font-size:14px;font-weight:800;opacity:.92}
+.skill small{font:400 13px var(--t);color:var(--ink);background:var(--gold);border-radius:8px;padding:1px 6px;margin-left:6px;border:2px solid var(--ink)}
+#mySkills{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:330px;margin:16px 0 22px;font-size:14px}
+#mySkills span{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border-radius:12px;padding:3px 9px 3px 3px}
+#mySkills img{width:28px;height:28px}
+#resRows{width:100%;max-width:330px;max-height:46vh;overflow:auto;margin:16px 0 22px;padding:8px 16px}
+#resRows div{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:16px;border-bottom:2px solid rgba(255,255,255,.12)}
+#resRows div:last-child{border:0}
+#resRows .tot{font:400 22px var(--t);color:var(--gold)}
+#resRows .new{justify-content:center;color:#8dffa0;font-size:16px}
+#resRows .rev{display:block;font-size:13px;text-align:left}
+#resRows .rev b{color:#8dffa0}
+#fade{position:absolute;inset:0;background:#05081a;opacity:0;pointer-events:none;transition:opacity .3s}
+#fade.purple{background:radial-gradient(circle,#f0a0ff,#7a2ae0 55%,#1a0538)}
+#fade.on{opacity:1}
+#loading{position:absolute;inset:0;display:grid;place-items:center;font:400 30px var(--t);background:linear-gradient(#3f8fe8,#bfe8ff);text-shadow:0 3px 0 #1a3a8a}
+
+/* (2026-11-04) The play area now fills a wide screen instead of sitting in a phone-shaped strip, so the
+   menu and the end-of-level panels are held to a centred column — otherwise their rows stretch right
+   across a classroom screen and look empty. The HUD stays full width, where it belongs. */
+#menu, #result, #pause, #levelup { left: 50%; right: auto; width: min(100%, 560px); transform: translateX(-50%); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="cv"></canvas>
+  <div id="nums"></div>
+  <div id="hpTag"><b id="hpNum">100</b><i><s id="hpFill"></s></i></div>
+  <div id="hurt"></div>
+
+  <section id="menu">
+    <div class="top">
+      <div><img id="logo" src="icons/logo.png?v=1" alt="Arrow Isles" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><div class="logo" hidden>ARROW<br>ISLES</div></div>
+      <div class="pill"><img class="tro" src="icons/trophy.png" alt="🏆"> <b id="trophies">0</b></div>
+    </div>
+    <div class="ribbon"><button id="prevIsle" class="round" aria-label="Previous island">‹</button><h2 id="isleName">Clover Isle</h2><button id="nextIsle" class="round" aria-label="Next island">›</button></div>
+    <p id="isleSub"></p>
+    <div class="road panel"><div class="bar"><i id="roadFill"></i></div><p id="roadTxt"></p></div>
+    <button id="qbtn"><span class="lv" id="qLv">A0</span><span class="t"><small>ENGLISH QUESTIONS</small><b id="qTitle"></b></span><span class="go">›</span></button>
+    <div class="heroes" id="heroes"></div>
+    <p id="perk"></p>
+    <button id="play" class="big">PLAY</button>
+  </section>
+
+  <section id="hud" hidden>
+    <div class="xp"><i id="xpFill"></i></div>
+    <div id="lvl">1</div>
+    <div class="hud-row">
+      <div class="pill"><img class="tro" src="icons/trophy.png" alt="🏆"> <b id="runTro">0</b></div>
+      <div class="room" id="roomTxt">Room 1/10</div>
+      <span style="width:46px"></span>
+      <button id="pauseBtn" class="round" aria-label="Pause">❚❚</button>
+    </div>
+    <div id="bossBar" hidden><span id="bossName"></span><i><s id="bossFill"></s></i></div>
+    <div id="toast"></div>
+    <div id="joy"><i id="joyK"></i></div>
+    <p id="hint">Drag to move · stand still to shoot</p>
+    <div id="hotbar"></div>
+    <div id="plateTags"></div>
+    <div id="trial" hidden><div class="tk" id="trialKick"></div><div class="tc" id="trialCard"></div></div>
+  </section>
+
+  <section id="levelup" class="modal" hidden><h2 id="lvlTitle">LEVEL UP!</h2><p id="lvlSub">Choose a skill</p><div id="skills"></div></section>
+  <section id="quiz" class="modal" hidden><div class="kick" id="quizKick"></div><div class="card" id="quizCard"></div><div id="opts"></div><p class="why" id="quizWhy"></p><button id="quizGo" class="big" hidden>OK</button></section>
+  <section id="pause" class="modal" hidden><h2>PAUSED</h2><div id="mySkills"></div><button id="resume" class="big">RESUME</button><button id="quit" class="ghost">Leave this run</button></section>
+  <section id="result" class="modal" hidden><h2 id="resTitle"></h2><p id="resSub"></p><div id="resRows" class="panel"></div><button id="resBtn" class="big">ISLANDS</button></section>
+  <div id="fade"></div>
+  <div id="loading">Loading…</div>
+</div>
+<script src="packages.js?v=1"></script>
+<script src="/shared/pack-picker.js?v=8"></script>
+<script type="module" src="game.js?v=9"></script>
+</body>
+</html>
